@@ -23,7 +23,9 @@ def run_discord_bot():
     intents = discord.Intents.default()
     intents.message_content = True
     bot = commands.Bot(command_prefix='!',intents=intents)
+    bot.remove_command('help')
 
+    
     @bot.event
     async def on_ready():
         print(f'{bot.user} is now running!')
@@ -216,6 +218,15 @@ def run_discord_bot():
 
         await ctx.send(embed=em)
 
+        @bot.command()
+        async def help(ctx):
+            em = discord.Embed(color=0x0080ff, title="Commands")
+            em.add_field(name="Roll", value="Roll a random character", inline=False)
+            em.add_field(name="Talent", value="Get today's talent materials", inline=False)
+            em.add_field(name="Character (name)", value="learn about your favorite characters", inline=False)
+            em.add_field(name="CV", value="Calculate your artifacts crit values", inline=False)
+            em.add_field(name="CT", value="Shows which characters talents are available today", inline=False)
+            await ctx.send(embed=em)
     
 
 
