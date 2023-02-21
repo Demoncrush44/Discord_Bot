@@ -4,6 +4,7 @@ import os
 import time
 import responses
 import requests
+import random
 from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
@@ -123,7 +124,7 @@ def run_discord_bot():
     async def character(ctx, name):
          URL = f'https://api.genshin.dev/characters/{name}'
          img =  f'https://api.genshin.dev/characters/{name}/gacha-splash'
-         card = f'https://api.genshin.dev/characters/{name}/card'
+         card = f'https://api.genshin.dev/characters/{name}/icon'
          r = requests.get(URL)
          res = r.json()
          charname = res['name']
@@ -142,11 +143,79 @@ def run_discord_bot():
          em.set_thumbnail(url=card)
          
          await ctx.send(embed=em)
-    
-    
-    
 
-    
+
+    @bot.command()
+    async def roll(ctx):
+        character_list = [
+            'albedo',
+            'aloy',
+            'amber',
+            'arataki-itto',
+            'ayaka',
+            'ayato',
+            'barbara',
+            'beidou',
+            'bennett',
+            'chongyun',
+            'collei',
+            'diluc',
+            'diona',
+            'eula',
+            'fischl',
+            'ganyu',
+            'gorou',
+            'hu-tao',
+            'jean',
+            'kaeya',
+            'kazuha',
+            'keqing',
+            'klee',
+            'kokomi',
+            'kuki-shinobu',
+            'lisa',
+            'mona',
+            'ningguang',
+            'noelle',
+            'qiqi',
+            'raiden',
+            'razor',
+            'rosaria',
+            'sara',
+            'sayu',
+            'shenhe',
+            'shikanoin-heizou',
+            'sucrose',
+            'tartaglia',
+            'thoma',
+            'tighnari',
+            'venti',
+            'xiangling',
+            'xiao',
+            'xingqiu',
+            'xinyan',
+            'yae-miko',
+            'yanfei',
+            'yelan',
+            'yoimiya',
+            'yun-jin',
+            'zhongli'
+
+        ]
+        char = random.choice(character_list)
+        URL = f'https://api.genshin.dev/characters/{char}'
+        img =  f'https://api.genshin.dev/characters/{char}/gacha-splash'
+        r = requests.get(URL)
+        res = r.json()
+        charname = res['name']
+        em = discord.Embed(
+            colour=discord.Colour.dark_blue(),
+        )
+        em.set_image(url=img)
+        em.set_author(name=f"{charname}")
+
+        await ctx.send(embed=em)
+
     
 
 
