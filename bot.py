@@ -55,7 +55,8 @@ def run_discord_bot():
 
     @bot.command()
     async def ct(ctx):
-        URL = 'https://api.genshin.dev/materials/talent-book'
+        URL = 'https://genshin.jmp.blue/materials/talent-book'
+
         r = requests.get(URL)
         res = r.json()
         freedom = res['freedom']['characters']
@@ -67,6 +68,9 @@ def run_discord_bot():
         transience = res['transience']['characters']
         light = res['light']['characters']
         elegance = res['elegance']['characters']
+        praxis = res['praxis']['characters']
+        ingenuity = res['ingenuity']['characters']
+        admonition = res['admonition']['characters']
 
         weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
         now = time.localtime()
@@ -82,21 +86,26 @@ def run_discord_bot():
         transience_characters=(' , '.join(str(a) for a in transience))
         light_characters=(' , '.join(str(a) for a in light))
         elegance_characters=(' , '.join(str(a) for a in elegance))
+        praxis_characters=(' , '.join(str(a) for a in praxis))
+        ingenuity_characters=(' , '.join(str(a) for a in ingenuity))
+        admonition_characters=(' , '.join(str(a) for a in admonition))
+
+
 
         if current_day == 'Monday':
-            await ctx.send(f"{freedom_characters} {prosperity_characters} {transience_characters} talent materials are available today!")
+            await ctx.send(f"{freedom_characters} {prosperity_characters} {transience_characters} {admonition_characters} talent materials are available today!")
         elif current_day == 'Tuesday':
-            await ctx.send(f"{resistance_characters} {diligence_characters} {elegance_characters} talent materials are available today!")
+            await ctx.send(f"{resistance_characters} {diligence_characters} {elegance_characters} {ingenuity_characters} talent materials are available today!")
         elif current_day == 'Wednesday':
-            await ctx.send(f"{ballad_characters} {gold_characters} {light_characters} talent materials are available today!")
+            await ctx.send(f"{ballad_characters} {gold_characters} {light_characters} {praxis_characters} talent materials are available today!")
         elif current_day == 'Thursday':
-            await ctx.send(f"{freedom_characters} {prosperity_characters} {transience_characters} talent materials are available today!")
+            await ctx.send(f"{freedom_characters} {prosperity_characters} {transience_characters} {admonition_characters} talent materials are available today!")
         elif current_day == 'Friday':
-            await ctx.send(f"{resistance_characters} {diligence_characters} {elegance_characters} talent materials are available today!")
+            await ctx.send(f"{resistance_characters} {diligence_characters} {elegance_characters} {ingenuity_characters} talent materials are available today!")
         elif current_day == 'Saturday':
-            await ctx.send(f"{ballad_characters} {gold_characters} {light_characters} talent materials are available today!")
+            await ctx.send(f"{ballad_characters} {gold_characters} {light_characters} {praxis} talent materials are available today!")
         elif current_day == 'Sunday':
-            await ctx.send(f"{freedom_characters} {prosperity_characters} {transience_characters} {resistance_characters} {diligence_characters} {elegance_characters} {ballad_characters} {gold_characters} {light_characters} talent materials are available today!")
+            await ctx.send(f"{freedom_characters} {prosperity_characters} {transience_characters} {resistance_characters} {diligence_characters} {elegance_characters} {ballad_characters} {gold_characters} {light_characters} {praxis_characters}  talent materials are available today!")
     
 
     @bot.command()
@@ -210,23 +219,110 @@ def run_discord_bot():
         r = requests.get(URL)
         res = r.json()
         charname = res['name']
+        title = res['title']
         em = discord.Embed(
             colour=discord.Colour.dark_blue(),
+            title=f"{title}"
         )
         em.set_image(url=img)
         em.set_author(name=f"{charname}")
+        
+        await ctx.send("You rolled")
+        await ctx.send(embed=em)
+
+
+    @bot.command()
+    async def weapon(ctx, name):
+        URL = f'https://api.genshin.dev/weapons/{name}'
+        img =  f'https://api.genshin.dev/weapons/{name}/icon'
+        r = requests.get(URL)
+        res = r.json()
+        weapon_name = res['name']
+        type = res['type']
+        base_attack = res['baseAttack']
+        sub_stat = res['subStat']
+        passive_name = res['passiveName']
+        passive_desc = res['passiveDesc']
+        em = discord.Embed(
+            colour=discord.Colour.yellow(),
+            title=f"{type}"
+            )
+        em.set_author(name=f"{weapon_name}")
+        em.set_thumbnail(url=img)
+        em.add_field(name="Base Attack", value=f"{base_attack}", inline=False)
+        em.add_field(name="Sub Stat", value=f"{sub_stat}", inline=False)
+        em.add_field(name=f"{passive_name}", value=f"{passive_desc}", inline=False)
+    
+            
+        await ctx.send(embed=em)
+    
+
+    @bot.command()
+    async def artifact(ctx, name):
+        URL = f'https://api.genshin.dev/artifacts/{name}'
+        random_artifacts = [
+            'circlet-of-logos',
+            'flower-of-life',
+            'goblet-of-eonothem',
+            'plume-of-death',
+            'sands-of-eon'
+
+        ]
+        artifact = random.choice(random_artifacts)
+        img = f'https://api.genshin.dev/artifacts/{name}/{artifact}'
+        r = requests.get(URL)
+        res = r.json()
+        artifact_name = res['name']
+        two_piece = res['2-piece_bonus']
+        four_piece = res['4-piece_bonus']
+
+        em = discord.Embed(
+            colour=discord.Colour.yellow()
+            )
+        em.set_author(name=f"{artifact_name}")
+        em.set_image(url=img)
+        em.add_field(name="Two-piece", value=f"{two_piece}", inline=False)
+        em.add_field(name="Four-piece", value=f"{four_piece}", inline=False)
+
+        await ctx.send(embed=em)
+    
+
+    @bot.command()
+    async def enemy(ctx, name):
+        URL = f'https://genshin.jmp.blue/enemies/{name}'
+        img = f'https://genshin.jmp.blue/enemies/{name}/portrait'
+        thumbnail = f'https://genshin.jmp.blue/enemies/{name}/icon'
+        r = requests.get(URL)
+        res = r.json()
+        enemy_name = res['name']
+        description = res['description']
+        region = res['region']
+
+        em = discord.Embed(
+            colour=discord.Colour.dark_red(),
+            title=f'{enemy_name}'
+        )
+        em.set_image(url=img)
+        em.set_thumbnail(url=thumbnail)
+        em.add_field(name="*Entry*", value=f"**{description}**", inline=False)
+        em.set_footer(text = f'{region}')
 
         await ctx.send(embed=em)
 
-        @bot.command()
-        async def help(ctx):
-            em = discord.Embed(color=0x0080ff, title="Commands")
-            em.add_field(name="Roll", value="Roll a random character", inline=False)
-            em.add_field(name="Talent", value="Get today's talent materials", inline=False)
-            em.add_field(name="Character (name)", value="learn about your favorite characters", inline=False)
-            em.add_field(name="CV", value="Calculate your artifacts crit values", inline=False)
-            em.add_field(name="CT", value="Shows which characters talents are available today", inline=False)
-            await ctx.send(embed=em)
+   
+
+
+    @bot.command()
+    async def help(ctx):
+        em = discord.Embed(color=0x0080ff, title="Commands")
+        em.add_field(name="Roll", value="Roll a random character", inline=False)
+        em.add_field(name="Talent", value="Get today's talent materials", inline=False)
+        em.add_field(name="Character (name)", value="learn about your favorite characters", inline=False)
+        em.add_field(name="CV", value="Calculate your artifacts crit values", inline=False)
+        em.add_field(name="CT", value="Shows which characters talents are available today", inline=False)
+        em.add_field(name="Weapon (name)", value="Shows weapon details", inline=False)
+        em.add_field(name="Enemy (name)", value="Shows enemy details", inline=False)
+        await ctx.send(embed=em)
     
 
 
