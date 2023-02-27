@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from assets import *
 import os
 import time
 import responses
@@ -9,6 +10,7 @@ from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
 
+
 async def send_message(message, user_message, is_private):
     try:
         response = responses.get_response(user_message)
@@ -16,6 +18,12 @@ async def send_message(message, user_message, is_private):
 
     except Exception as e:
         print(e)
+
+
+class Menu(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.value = None
 
 
 def run_discord_bot():
@@ -89,8 +97,7 @@ def run_discord_bot():
         praxis_characters=(' , '.join(str(a) for a in praxis))
         ingenuity_characters=(' , '.join(str(a) for a in ingenuity))
         admonition_characters=(' , '.join(str(a) for a in admonition))
-
-
+    
 
         if current_day == 'Monday':
             await ctx.send(f"{freedom_characters} {prosperity_characters} {transience_characters} {admonition_characters} talent materials are available today!")
@@ -103,7 +110,7 @@ def run_discord_bot():
         elif current_day == 'Friday':
             await ctx.send(f"{resistance_characters} {diligence_characters} {elegance_characters} {ingenuity_characters} talent materials are available today!")
         elif current_day == 'Saturday':
-            await ctx.send(f"{ballad_characters} {gold_characters} {light_characters} {praxis} talent materials are available today!")
+            await ctx.send(f"{ballad_characters} {gold_characters} {light_characters} {praxis_characters} talent materials are available today!")
         elif current_day == 'Sunday':
             await ctx.send(f"{freedom_characters} {prosperity_characters} {transience_characters} {resistance_characters} {diligence_characters} {elegance_characters} {ballad_characters} {gold_characters} {light_characters} {praxis_characters}  talent materials are available today!")
     
@@ -133,86 +140,178 @@ def run_discord_bot():
     
     @bot.command()
     async def character(ctx, name):
-         URL = f'https://api.genshin.dev/characters/{name}'
-         img =  f'https://api.genshin.dev/characters/{name}/gacha-splash'
-         card = f'https://api.genshin.dev/characters/{name}/icon'
-         r = requests.get(URL)
-         res = r.json()
-         charname = res['name']
-         vision = res['vision']
-         title = res['title']
-         description = res['description']
-         em = discord.Embed(
+        URL = f'https://genshin.jmp.blue/characters/{name}'
+        img =  f'https://genshin.jmp.blue/characters/{name}/gacha-splash'
+        card = f'https://genshin.jmp.blue/characters/{name}/icon-big'
+        r = requests.get(URL)
+        res = r.json()
+        charname = res['name']
+        vision = res['vision']
+        title = res['title']
+        description = res['description']
+        rarity = res['rarity']
+        weapon = res['weapon']
+        nation = res['nation']
+        affiliation = res['affiliation']
+        birthday = res['birthday']
+        constellation = res['constellation']
+        
+        a = birthday.split('-')
+        birthday_format = ('-'.join(a[1:]))
+
+
+         
+        em = discord.Embed(
          colour=discord.Colour.dark_blue(),
          description=f"{description}",
          title=f"{title}"
          )
-         em.set_image(url=img)
-         em.set_footer(text=f"{vision}")
-         em.set_author(name=f"{charname}")
+        em.set_author(name=f"{charname}")
+        em.set_thumbnail(url=card)
 
-         em.set_thumbnail(url=card)
+        em.add_field(
+            name='**__Character Info__**',
+            value='\u200b',     
+            inline=False
+        )
          
-         await ctx.send(embed=em)
+        if charname in male_characters:
+            em.add_field(
+                name="Gender",
+                value=':male_sign:Male',
+                inline=True
+            )
+        else:
+            em.add_field(
+                name="Gender",
+                value=':female_sign:Female',
+                inline=True
+            )
+             
+        em.add_field(
+             name="Nation",
+             value=f':mailbox_closed:{nation}',
+             inline=True
+         )
+
+        em.add_field(
+             name="Affiliation",
+             value=f':tophat:{affiliation}',
+             inline=True
+         )
+
+        em.add_field(
+             name="Weapon",
+             value=f':dagger:{weapon}',
+             inline=True
+         )
+        if vision == 'Geo':
+             em.add_field(
+             name="Vision",
+             value=f':mountain:{vision}',
+             inline=True
+         )
+        elif vision == 'Cryo':
+             em.add_field(
+             name="Vision",
+             value=f':snowflake:{vision}',
+             inline=True
+         )
+        elif vision == "Pyro":
+             em.add_field(
+             name="Vision",
+             value=f':fire:{vision}',
+             inline=True
+         )
+        elif vision == "Hydro":
+             em.add_field(
+             name="Vision",
+             value=f':bubbles:{vision}',
+             inline=True
+         )
+        elif vision == "Dendro":
+             em.add_field(
+             name="Vision",
+             value=f':deciduous_tree:{vision}',
+             inline=True
+         )
+             
+        elif vision == "Electro":
+             em.add_field(
+             name="Vision",
+             value=f':zap:{vision}',
+             inline=True
+         )
+             
+        elif vision == "Anemo":
+             em.add_field(
+             name="Vision",
+             value=f':cloud_tornado:{vision}',
+             inline=True
+         ) 
+                    
+        em.add_field(
+               name=":birthday:Birthday",
+               value=f'{birthday_format}',
+               inline=True
+        )
+
+        em.add_field(
+                name='Constellation',
+                value=f':comet:{constellation}',
+                inline=True
+        )
+
+
+        if charname in standard_banner:
+            em.add_field(
+                name="Obtained",
+                value=":fireworks:Standard banner",
+                inline=True
+            )
+        elif charname in given_characters:
+            em.add_field(
+                name="Obtained",
+                value=":fireworks:Given/Standard Banner",
+                inline=True
+            )
+        elif charname in travler_element:
+            em.add_field(
+                name="Obtained",
+                value=":fireworks:Statue of Sevens",
+                inline=True
+            )
+        else:
+            em.add_field(
+                name="Obtained",
+                value=":fireworks:Event Banner",
+                inline=True
+            )
+
+
+        if rarity == 5:
+             em.add_field(
+                 name="Rarity",
+                 value=':star::star::star::star::star:',
+                 inline=True
+             )
+        elif rarity == 4:
+            em.add_field(
+                name="Rarity",
+                value=':star::star::star::star:',
+                inline=True
+                 )
+
+        
+        view = Menu()
+        view.add_item(discord.ui.Button(label="Portrait", style=discord.ButtonStyle.red, url=img))
+        
+
+        await ctx.send(embed=em, view=view)
 
 
     @bot.command()
     async def roll(ctx):
-        character_list = [
-            'albedo',
-            'aloy',
-            'amber',
-            'arataki-itto',
-            'ayaka',
-            'ayato',
-            'barbara',
-            'beidou',
-            'bennett',
-            'chongyun',
-            'collei',
-            'diluc',
-            'diona',
-            'eula',
-            'fischl',
-            'ganyu',
-            'gorou',
-            'hu-tao',
-            'jean',
-            'kaeya',
-            'kazuha',
-            'keqing',
-            'klee',
-            'kokomi',
-            'kuki-shinobu',
-            'lisa',
-            'mona',
-            'ningguang',
-            'noelle',
-            'qiqi',
-            'raiden',
-            'razor',
-            'rosaria',
-            'sara',
-            'sayu',
-            'shenhe',
-            'shikanoin-heizou',
-            'sucrose',
-            'tartaglia',
-            'thoma',
-            'tighnari',
-            'venti',
-            'xiangling',
-            'xiao',
-            'xingqiu',
-            'xinyan',
-            'yae-miko',
-            'yanfei',
-            'yelan',
-            'yoimiya',
-            'yun-jin',
-            'zhongli'
-
-        ]
         char = random.choice(character_list)
         URL = f'https://api.genshin.dev/characters/{char}'
         img =  f'https://api.genshin.dev/characters/{char}/gacha-splash'
@@ -252,7 +351,7 @@ def run_discord_bot():
         em.add_field(name="Base Attack", value=f"{base_attack}", inline=False)
         em.add_field(name="Sub Stat", value=f"{sub_stat}", inline=False)
         em.add_field(name=f"{passive_name}", value=f"{passive_desc}", inline=False)
-    
+
             
         await ctx.send(embed=em)
     
@@ -294,21 +393,77 @@ def run_discord_bot():
         thumbnail = f'https://genshin.jmp.blue/enemies/{name}/icon'
         r = requests.get(URL)
         res = r.json()
+
         enemy_name = res['name']
         description = res['description']
         region = res['region']
+        faction = res['faction']
+        type = res['type'] 
+        drops = res['drops'][0]['name']
+        family = res['family']
+        elements = res['elements']
+        
+        element_list=(' | '.join(str(i) for i in elements))
+        
 
         em = discord.Embed(
             colour=discord.Colour.dark_red(),
-            title=f'{enemy_name}'
+            title=f'{enemy_name}',
+            description=f"{description}"
         )
-        em.set_image(url=img)
         em.set_thumbnail(url=thumbnail)
-        em.add_field(name="*Entry*", value=f"**{description}**", inline=False)
-        em.set_footer(text = f'{region}')
+        
+        em.add_field(
+            name='**__Enemy Info__**',
+            value='\u200b',     
+            inline=False
+        )
 
-        await ctx.send(embed=em)
 
+        em.add_field(
+            name="Faction",
+            value=f'{faction}',
+            inline=True
+        )
+
+        em.add_field(
+            name="Region",
+            value=f"{region}",
+            inline=True
+        )
+
+        em.add_field(
+            name="Enemy-Type",
+            value=f"{type}",
+            inline=True
+        )
+
+        em.add_field(
+            name="Drops",
+            value=f"{drops}",
+            inline=True
+        )
+
+        em.add_field(
+            name='Family',
+            value= f'{family}',
+            inline=True
+        )
+        
+        em.add_field(
+            name="Element",
+            value= f'{element_list}',
+            inline=True
+        )
+
+
+
+
+        view = Menu()
+        view.add_item(discord.ui.Button(label="Portrait", style=discord.ButtonStyle.red, url=img))
+        await ctx.send(embed=em, view=view)
+
+        
    
 
 
