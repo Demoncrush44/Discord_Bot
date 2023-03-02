@@ -582,8 +582,76 @@ def run_discord_bot():
         view = Menu()
         view.add_item(discord.ui.Button(label="Portrait", style=discord.ButtonStyle.red, url=img))
         await ctx.send(embed=em, view=view)
+    
 
-        
+    @bot.command()
+    async def weekly(ctx, name):
+        url = f'https://genshin.jmp.blue/boss%2Fweekly-boss/{name}'
+        img = f'https://genshin.jmp.blue/boss%2Fweekly-boss/{name}/icon'
+        r = requests.get(url)
+        res = r.json()
+
+        boss_name = res['name']
+        description = res['description']
+        first_drop = res['drops'][0]['name']
+        second_drop = res['drops'][1]['name']
+        third_drop = res['drops'][2]['name']
+
+
+        em = discord.Embed(
+            colour= discord.Colour.blurple(),
+            title=f'{boss_name}',
+            description=f'{description}'
+        )
+
+        em.set_thumbnail(url=img)
+
+        em.add_field(
+            name='**__Enemy Info__**',
+            value='\u200b',     
+            inline=False
+        )
+
+        em.add_field(
+            name=':flying_disc:Drop',
+            value=f'{first_drop}',
+            inline=True
+
+        )
+
+        em.add_field(
+            name=':flying_disc:Drop',
+            value=f'{second_drop}',
+            inline=True
+
+        )
+
+        em.add_field(
+            name=':flying_disc:Drop',
+            value=f'{third_drop}',
+            inline=True
+
+        )
+
+        em.add_field(
+            name='Rarity',
+            value=':star::star::star::star::star:',
+            inline=True
+        )
+
+        em.add_field(
+            name='Rarity',
+            value=':star::star::star::star::star:',
+            inline=True
+        )
+
+        em.add_field(
+            name='Rarity',
+            value=':star::star::star::star::star:',
+            inline=True
+        )
+
+        await ctx.send(embed=em)
    
 
 
