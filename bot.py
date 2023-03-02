@@ -332,8 +332,8 @@ def run_discord_bot():
 
     @bot.command()
     async def weapon(ctx, name):
-        URL = f'https://api.genshin.dev/weapons/{name}'
-        img =  f'https://api.genshin.dev/weapons/{name}/icon'
+        URL = f'https://genshin.jmp.blue/weapons/{name}'
+        img =  f'https://genshin.jmp.blue/weapons/{name}/icon'
         r = requests.get(URL)
         res = r.json()
         weapon_name = res['name']
@@ -342,16 +342,88 @@ def run_discord_bot():
         sub_stat = res['subStat']
         passive_name = res['passiveName']
         passive_desc = res['passiveDesc']
+        location = res['location']
+        material = res.get('ascensionMaterials') or None
+        rarity = res['rarity']
+
+
+
         em = discord.Embed(
             colour=discord.Colour.yellow(),
-            title=f"{type}"
+            title=f"{passive_name}",
+            description=f'{passive_desc}'
             )
-        em.set_author(name=f"{weapon_name}")
-        em.set_thumbnail(url=img)
-        em.add_field(name="Base Attack", value=f"{base_attack}", inline=False)
-        em.add_field(name="Sub Stat", value=f"{sub_stat}", inline=False)
-        em.add_field(name=f"{passive_name}", value=f"{passive_desc}", inline=False)
+        em.set_author(
+            name=f'{weapon_name}'
+        )
 
+        em.add_field(
+            name='*__Weapon Info__*',
+            value='\u200b',
+            inline=False
+        )
+
+        em.add_field(
+            name=':crossed_swords:Base Attack',
+            value=f'{base_attack}',
+            inline=True
+        )
+
+        em.add_field(
+            name=':axe:Sub Stat',
+            value=f'{sub_stat}',
+            inline=True
+        )
+
+        em.add_field(
+            name=f':dagger:Type',
+            value=f'{type}',
+            inline=True
+        )
+
+
+        if material == None:
+            em.add_field(
+                name=':pick:Materials',
+                value='Not available',
+                inline=True
+        )
+        else:
+            em.add_field(
+                name=':pick:Materials',
+                value=f'{material}',
+                inline=True
+        )
+
+        em.add_field(
+            name=':comet:Obtained',
+            value=f'{location}',
+            inline=True
+        )
+
+        if rarity == 5:
+             em.add_field(
+                 name="Rarity",
+                 value=':star::star::star::star::star:',
+                 inline=True
+             )
+        elif rarity == 4:
+            em.add_field(
+                name="Rarity",
+                value=':star::star::star::star:',
+                inline=True
+            )
+        else:
+             em.add_field(
+                name="Rarity",
+                value=':star::star::star:',
+                inline=True
+            )
+
+        
+
+
+        em.set_thumbnail(url=img)
             
         await ctx.send(embed=em)
     
@@ -365,7 +437,6 @@ def run_discord_bot():
             'goblet-of-eonothem',
             'plume-of-death',
             'sands-of-eon'
-
         ]
         artifact = random.choice(random_artifacts)
         img = f'https://api.genshin.dev/artifacts/{name}/{artifact}'
@@ -374,14 +445,50 @@ def run_discord_bot():
         artifact_name = res['name']
         two_piece = res['2-piece_bonus']
         four_piece = res['4-piece_bonus']
+        rarity = res['max_rarity']
 
         em = discord.Embed(
             colour=discord.Colour.yellow()
             )
         em.set_author(name=f"{artifact_name}")
-        em.set_image(url=img)
-        em.add_field(name="Two-piece", value=f"{two_piece}", inline=False)
-        em.add_field(name="Four-piece", value=f"{four_piece}", inline=False)
+        em.set_thumbnail(url=img)
+        em.add_field(
+            name='*__Artifact Info__*',
+            value='\u200b',
+            inline=False
+        )
+        if rarity == 5:
+            em.add_field(
+                name='Rarity',
+                value=':star::star::star::star::star:',
+                inline=False
+            )
+        elif rarity == 4:
+            em.add_field(
+                name='Rarity',
+                value=':star::star::star::star:',
+                inline=False
+            )
+        else:
+            em.add_field(
+                name='Rarity',
+                value=':star::star::star:',
+                inline=False
+            )
+
+
+
+        em.add_field(
+                name=':two:Two-piece',
+                value=f"{two_piece}", 
+                inline=False
+        )
+
+        em.add_field(
+                name=':four:Four-piece', 
+                value=f"{four_piece}", 
+                inline=False
+        )
 
         await ctx.send(embed=em)
     
@@ -397,12 +504,11 @@ def run_discord_bot():
         enemy_name = res['name']
         description = res['description']
         region = res['region']
-        faction = res['faction']
         type = res['type'] 
-        drops = res['drops'][0]['name']
+        drops = res.get('drops')[0].get('name') or None
         family = res['family']
         elements = res['elements']
-        
+        faction = res.get('faction') or None
         element_list=(' | '.join(str(i) for i in elements))
         
 
@@ -418,40 +524,54 @@ def run_discord_bot():
             value='\u200b',     
             inline=False
         )
-
-
-        em.add_field(
-            name="Faction",
-            value=f'{faction}',
+        
+        if faction == None:
+            em.add_field(
+            name=':boom:Faction',
+            value='Not Available',     
             inline=True
         )
+        else:
+            em.add_field(
+            name=':boom:Faction',
+            value=f'{faction}',
+            inline=True 
+        )    
+          
+        
 
         em.add_field(
-            name="Region",
+            name=':triangular_flag_on_post:Region',
             value=f"{region}",
             inline=True
         )
 
         em.add_field(
-            name="Enemy-Type",
+            name=":pirate_flag:Enemy-Type",
             value=f"{type}",
             inline=True
         )
-
-        em.add_field(
-            name="Drops",
-            value=f"{drops}",
+        if drops == None:
+            em.add_field(
+            name=":coin:Drops",
+            value='None',
             inline=True
+        )
+        else:
+            em.add_field(
+                name=":coin:Drops",
+                value=f"{drops}",
+                inline=True
         )
 
         em.add_field(
-            name='Family',
+            name=':family:Family',
             value= f'{family}',
             inline=True
         )
         
         em.add_field(
-            name="Element",
+            name=":stars:Element",
             value= f'{element_list}',
             inline=True
         )
