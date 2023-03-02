@@ -665,6 +665,7 @@ def run_discord_bot():
         em.add_field(name="CT", value="Shows which characters talents are available today", inline=False)
         em.add_field(name="Weapon (name)", value="Shows weapon details", inline=False)
         em.add_field(name="Enemy (name)", value="Shows enemy details", inline=False)
+        em.add_field(name="Weekly (name)", value="Shows boss details", inline=False)
         await ctx.send(embed=em)
     
 
