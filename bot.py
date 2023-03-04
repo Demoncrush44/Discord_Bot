@@ -311,8 +311,8 @@ def run_discord_bot():
 
 
     @bot.command()
-    async def roll(ctx, n):
-        for _ in range(n):
+    async def roll(ctx, n="1"):
+        for _ in range(int(n)):
             char = random.choice(character_list)
             URL = f'https://api.genshin.dev/characters/{char}'
             img =  f'https://api.genshin.dev/characters/{char}/gacha-splash'
