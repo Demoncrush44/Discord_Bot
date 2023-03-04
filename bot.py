@@ -311,23 +311,24 @@ def run_discord_bot():
 
 
     @bot.command()
-    async def roll(ctx):
-        char = random.choice(character_list)
-        URL = f'https://api.genshin.dev/characters/{char}'
-        img =  f'https://api.genshin.dev/characters/{char}/gacha-splash'
-        r = requests.get(URL)
-        res = r.json()
-        charname = res['name']
-        title = res['title']
-        em = discord.Embed(
-            colour=discord.Colour.dark_blue(),
-            title=f"{title}"
-        )
-        em.set_image(url=img)
-        em.set_author(name=f"{charname}")
-        
-        await ctx.send("You rolled")
-        await ctx.send(embed=em)
+    async def roll(ctx, n):
+        for _ in range(n):
+            char = random.choice(character_list)
+            URL = f'https://api.genshin.dev/characters/{char}'
+            img =  f'https://api.genshin.dev/characters/{char}/gacha-splash'
+            r = requests.get(URL)
+            res = r.json()
+            charname = res['name']
+            title = res['title']
+            em = discord.Embed(
+                colour=discord.Colour.dark_blue(),
+                title=f"{title}"
+            )
+            em.set_image(url=img)
+            em.set_author(name=f"{charname}")
+            
+            await ctx.send("You rolled")
+            await ctx.send(embed=em)
 
 
     @bot.command()
@@ -658,7 +659,7 @@ def run_discord_bot():
     @bot.command()
     async def help(ctx):
         em = discord.Embed(color=0x0080ff, title="Commands")
-        em.add_field(name="Roll", value="Roll a random character", inline=False)
+        em.add_field(name="Roll (n)", value="Roll a random character (n) times", inline=False)
         em.add_field(name="Talent", value="Get today's talent materials", inline=False)
         em.add_field(name="Character (name)", value="learn about your favorite characters", inline=False)
         em.add_field(name="CV", value="Calculate your artifacts crit values", inline=False)
